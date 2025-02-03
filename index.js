@@ -1,15 +1,24 @@
+let level = -2;
+let resetTimer = 5000;
+let touched = false;
+
 function countdown() {
     const dateInput = document.getElementById('date').value;
     const timeInput = document.getElementById('time').value;
+    const endDateLocal = localStorage.getItem('endDate');
     let endDate;
-
-    if (dateInput) {
-        endDate = new Date(dateInput + ' ' + timeInput);
-    } else {
-        const now = new Date();
-        endDate = new Date(now.toDateString() + ' ' + timeInput);
-        if (endDate <= now) {
-            endDate.setDate(endDate.getDate() + 1);
+    if (endDateLocal) {
+        endDate = new Date(endDateLocal);
+    }
+    else {
+        if (dateInput) {
+            endDate = new Date(dateInput + ' ' + timeInput);
+        } else {
+            const now = new Date();
+            endDate = new Date(now.toDateString() + ' ' + timeInput);
+            if (endDate <= now) {
+                endDate.setDate(endDate.getDate() + 1);
+            }
         }
     }
 
@@ -38,6 +47,7 @@ function countdown() {
         confettiEffect();
         document.getElementById('date').value = '';
         document.getElementById('time').value = '';
+        localStorage.removeItem('endDate');
         return;
     }
 
@@ -84,13 +94,40 @@ function confettiEffect() {
 
 let interval;
 document.getElementById('startButton').addEventListener('click', function() {
+    level = -1;
+    resetTimer = 5000;
+    touched = false;
     clearInterval(interval);
     countdown();
     interval = setInterval(countdown, 1000);
     document.getElementById('date').disabled = true;
     document.getElementById('time').disabled = true;
     document.getElementById('timeSlider').disabled = true;
-    document.getElementById('startButton').disabled = true;
+    const startButton = document.getElementById('startButton');
+    startButton.disabled = true;
+    startButton.innerHTML = '🔒 Start';
+    document.getElementById('date').classList.add('fade-out');
+    document.getElementById('time').classList.add('fade-out');
+    document.getElementById('timeSlider').classList.add('fade-out');
+    setTimeout(() => {
+        document.getElementById('date').style.display = 'none';
+        document.getElementById('time').style.display = 'none';
+        document.getElementById('timeSlider').style.display = 'none';
+    }, 500);
+
+    const dateInput = document.getElementById('date').value;
+    const timeInput = document.getElementById('time').value;
+    let endDate;
+    if (dateInput) {
+        endDate = new Date(dateInput + ' ' + timeInput);
+    } else {
+        const now = new Date();
+        endDate = new Date(now.toDateString() + ' ' + timeInput);
+        if (endDate <= now) {
+            endDate.setDate(endDate.getDate() + 1);
+        }
+    }
+    localStorage.setItem('endDate', endDate);
 });
 
 document.getElementById('resetButton').addEventListener('click', function() {
@@ -105,7 +142,50 @@ document.getElementById('resetButton').addEventListener('click', function() {
     document.getElementById('date').disabled = false;
     document.getElementById('time').disabled = false;
     document.getElementById('timeSlider').disabled = false;
-    document.getElementById('startButton').disabled = false;
+    const startButton = document.getElementById('startButton');
+    startButton.disabled = false;
+    startButton.innerHTML = 'Start';
+    document.getElementById('date').classList.remove('fade-out');
+    document.getElementById('time').classList.remove('fade-out');
+    document.getElementById('timeSlider').classList.remove('fade-out');
+    document.getElementById('date').style.display = '';
+    document.getElementById('time').style.display = '';
+    document.getElementById('timeSlider').style.display = '';
+    setTimeout(() => {
+        document.getElementById('date').classList.add('fade-in');
+        document.getElementById('time').classList.add('fade-in');
+        document.getElementById('timeSlider').classList.add('fade-in');
+    }, 0);
+    localStorage.removeItem('endDate');
+});
+
+document.getElementById('resetButton').addEventListener('mouseover', function() {
+    if (level === -1) {
+        level = 0;
+    }
+    if (level === 0) {
+        const button = this;
+        touched = true;
+        button.style.position = 'absolute';
+        button.style.transition = 'top 0.5s ease, left 0.5s ease';
+        const moveButton = () => {
+            const randomX = Math.random() * 90;
+            const randomY = Math.random() * 90;
+            button.style.top = `${randomY}%`;
+            button.style.left = `${randomX}%`;
+        };
+        moveButton();
+        clearTimeout(button.returnTimeout);
+    }
+});
+
+document.getElementById('resetButton').addEventListener('mouseleave', function() {
+    const button = this;
+    button.returnTimeout = setTimeout(() => {
+        if (level === 0) {
+            touched = false;
+         }
+    }, 450);
 });
 
 document.getElementById('timeSlider').addEventListener('input', function() {
@@ -120,18 +200,46 @@ document.getElementById('timeSlider').addEventListener('input', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    const now = new Date();
-    const secondsSinceMidnight = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    document.getElementById('timeSlider').value = secondsSinceMidnight;
+    const endDate = localStorage.getItem('endDate');
+    if (endDate) {
+        const endDateObj = new Date(endDate);
+        level = -1;
+        document.getElementById('date').value = endDateObj.toISOString().split('T')[0];
+        document.getElementById('time').value = endDateObj.toTimeString().split(' ')[0];
+        document.getElementById('date').disabled = true;
+        document.getElementById('time').disabled = true;
+        document.getElementById('timeSlider').disabled = true;
+        const startButton = document.getElementById('startButton');
+        startButton.disabled = true;
+        startButton.innerHTML = '🔒 Start';
+        interval = setInterval(countdown, 1000);
+        const secondsSinceMidnight = endDateObj.getHours() * 3600 + endDateObj.getMinutes() * 60 + endDateObj.getSeconds();
+        document.getElementById('timeSlider').value = secondsSinceMidnight;
+    } else {
+        const now = new Date();
+        const secondsSinceMidnight = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+        document.getElementById('timeSlider').value = secondsSinceMidnight;
+    }
 });
 
-document.getElementById('resetButton').addEventListener('click', function() {
-    clearInterval(interval);
-    document.getElementById('date').value = '';
-    document.getElementById('time').value = '';
-    document.getElementById('countDownText').innerHTML = "00:00:00:00";
-    document.getElementById('countDownText').style.color = "#333";
-    const now = new Date();
-    const secondsSinceMidnight = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    document.getElementById('timeSlider').value = secondsSinceMidnight;
-});
+
+let runnerInterval = setInterval(() => {
+    if (level !== 0) {
+        return;
+    }
+    document.getElementById('resetButton').innerHTML = `Reset in ${resetTimer / 1000} seconds`;
+    if (!touched) {
+        resetTimer += 100;
+    }
+    else {
+        resetTimer -= 100;
+    }
+    if (resetTimer <= 0) {
+        const resetButton = document.getElementById('resetButton');
+        resetButton.style.top = '';
+        resetButton.style.left = '';
+        resetButton.style.position = '';
+        document.getElementById('resetButton').innerHTML = `Reset`;
+        level = 1;
+    }
+}, 100);
