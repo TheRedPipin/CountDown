@@ -16,7 +16,7 @@ body {
 }
 
 #countDownText {
-    font-size: 8em; /* Increased font size */
+    font-size: 8em;
     position: absolute;
     top: 10%;
     color: #333;
@@ -42,34 +42,72 @@ body {
     width: 200px;
 }
 
-@keyframes rotate {
-    0% {
-        transform: rotate(0deg);
-    }
-    50% {
-        transform: rotate(180deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+#timeSlider {
+    -webkit-appearance: none;
+    appearance: none;
+    border: 1px solid white;
+    width: 300px;
+}
+#timeSlider::-webkit-slider-runnable-track {
+    width: 300px;
+    height: 5px;
+    background: #ddd;
+    border: none;
+    border-radius: 3px;
+}
+#timeSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: goldenrod;
+    margin-top: -4px;
+}
+#timeSlider:focus {
+    outline: none;
 }
 
-.rotate {
-    animation: rotate 2s linear;
+#resetButton {
+    margin: 10px 0;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    background-color: #ff6666;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-@keyframes fade {
-    0% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+#resetButton:hover {
+    background-color: #ff3333;
 }
 
-.fade {
-    animation: fade 0.5s ease-in-out;
+#startButton {
+    margin: 10px 0;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    background-color: #66cc66;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#startButton:hover {
+    background-color: #33cc33;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+.shake {
+    animation: shake 0.5s;
 }

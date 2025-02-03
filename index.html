@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Count Down</title>
     <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
     <script src="index.js" defer></script>
 </head>
 <body>
@@ -12,11 +13,14 @@
         ⌛
     </div>
     <div id="countDownText">
-        00:00:00
+        00:00:00:00
     </div>
     <div id="calander">
         <input id="date" type="date">
-        <input id="time" type="time">
+        <input id="time" type="time" step="1">
+        <input id="timeSlider" type="range" min="0" max="86300" step="1">
+        <button id="startButton">Start</button>
+        <button id="resetButton">Reset</button>
     </div>
 </body>
 </html>
